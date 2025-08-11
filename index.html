@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -220,3 +221,108 @@
   </script>
 </body>
 </html>
+=======
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quer namorar comigo?</title>
+  <style>
+    /* fundo e centralização */
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .page{min-height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe4ec,#e6f3ff)}
+    /* card */
+    .card{position:relative;max-width:560px;width:100%;background:#fff;border-radius:20px;padding:28px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.12);min-height:260px}
+    /* botões */
+    .btn{border:0;border-radius:999px;padding:12px 20px;font-size:16px;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.1)}
+    #yesBtn{background:#22c55e;color:#fff;margin-right:12px}     /* “sim” fixo */
+    #noBtn{position:absolute;left:140px;top:0;background:#ef4444;color:#fff} /* “não” foge */
+    /* mensagem final oculta */
+    .final{display:none;margin-top:12px;font-size:18px}
+    /* confete básico */
+    .confetti{pointer-events:none;position:absolute;inset:0;overflow:hidden}
+    .piece{position:absolute;top:-12px;width:8px;height:12px;background:currentColor;opacity:.9;animation:fall 2.2s linear forwards}
+    @keyframes fall{to{transform:translateY(120vh) rotate(720deg)}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card" id="card">
+      <h1>Quer namorar comigo?</h1>
+      <p>Responda com sinceridade :)</p>
+
+      <!-- área dos botões -->
+      <div id="buttonsArea" style="position:relative;display:inline-block;min-height:60px">
+        <button id="yesBtn" class="btn" type="button">Sim</button>
+        <button id="noBtn" class="btn" type="button">Não</button>
+      </div>
+
+      <!-- aparece depois do “Sim” -->
+      <div id="finalMsg" class="final">
+        <h2>💖 Sabia que você ia dizer sim!</h2>
+        <p>Prometo estar com você em todos os momentos. Vamos construir algo lindo juntos? 💞</p>
+      </div>
+
+      <!-- confete -->
+      <div class="confetti" id="confetti"></div>
+    </section>
+  </main>
+
+  <script>
+    // refs
+    const card = document.getElementById('card');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn  = document.getElementById('noBtn');
+    const finalMsg = document.getElementById('finalMsg');
+    const buttonsArea = document.getElementById('buttonsArea');
+    const confettiBox = document.getElementById('confetti');
+
+    // move o “não” aleatoriamente dentro do card
+    function moveNo() {
+      const c = card.getBoundingClientRect();         // tamanho do card
+      const b = noBtn.getBoundingClientRect();        // tamanho do botão
+      const pad = 10;                                  // margem de segurança
+      const maxL = c.width  - b.width  - pad;
+      const maxT = c.height - b.height - pad;
+      noBtn.style.left = Math.max(pad, Math.floor(Math.random()*maxL)) + 'px';
+      noBtn.style.top  = Math.max(pad, Math.floor(Math.random()*maxT)) + 'px';
+    }
+
+    // eventos que fazem o “não” fugir (mouse e toque)
+    ['pointerenter','pointermove','mouseenter'].forEach(e=>noBtn.addEventListener(e, moveNo));
+    noBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
+    noBtn.addEventListener('focus', moveNo);
+
+    // clique no “Sim”: esconde botões, mostra mensagem e solta confete
+    yesBtn.addEventListener('click', () => {
+      buttonsArea.style.display = 'none';
+      finalMsg.style.display = 'block';
+      dropConfetti();
+    });
+
+    // confete simples
+    function dropConfetti(){
+      confettiBox.innerHTML = '';
+      const colors = ['#22c55e','#ef4444','#3b82f6','#eab308','#a855f7','#f97316'];
+      const pieces = 60, width = card.clientWidth;
+      for(let i=0;i<pieces;i++){
+        const el = document.createElement('div');
+        el.className = 'piece';
+        el.style.color = colors[i % colors.length];
+        el.style.left = Math.floor(Math.random()*width)+'px';
+        el.style.animationDelay = (Math.random()*.8)+'s';
+        confettiBox.appendChild(el);
+      }
+    }
+
+    // posição inicial do “não”
+    window.addEventListener('load', () => {
+      const yesW = yesBtn.getBoundingClientRect().width;
+      noBtn.style.left = (yesW + 24) + 'px';
+      noBtn.style.top  = '0px';
+    });
+  </script>
+</body>
+</html>
+>>>>>>> 6a029cd (fix: add real index content)
