@@ -3,124 +3,161 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" /> <!-- força recarregar -->
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <title>Quer namorar comigo?</title>
   <style>
-    /* tela 100% e sem rolagem */
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    body{overflow:hidden}
-    /* fundo tela cheia */
-    .bg{
-      position:fixed; inset:0;           /* ocupa 100% da viewport */
-      display:grid; place-items:center;  /* centraliza conteúdo */
-      background:
-        radial-gradient(circle at 20% 20%, #fff7, transparent 40%),
-        radial-gradient(circle at 80% 30%, #fff5, transparent 35%),
-        linear-gradient(135deg,#ffe4ec,#e6f3ff);
+    body{overflow:hidden;background:#ffe4ec;position:relative}
+
+    /* corações de fundo */
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(45deg);
+      animation: floatUp 8s linear infinite;
     }
-    /* bloco central sem card */
-    .center{text-align:center; padding:16px; max-width:min(92vw,1000px)}
-    h1{margin:0 0 12px; font-size:clamp(32px,6vw,56px); font-weight:800}
-    p{margin:0 0 24px; font-size:clamp(16px,3vw,20px); color:#333}
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+    }
+    .heart::before { top: -10px; left: 0; }
+    .heart::after { left: -10px; top: 0; }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(45deg); opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(45deg); opacity: 0; }
+    }
+
+    /* conteúdo central */
+    .center {
+      position: relative;
+      z-index: 10;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+    h1 { font-size: clamp(28px,5vw,48px); margin-bottom: 16px; }
+    p  { font-size: clamp(16px,3vw,20px); margin-bottom: 20px; }
 
     /* botões */
-    .btn{border:0;border-radius:999px;padding:16px 28px;font-size:clamp(16px,3vw,20px);cursor:pointer;
-         box-shadow:0 10px 24px rgba(0,0,0,.12);user-select:none;touch-action:manipulation}
-    #yesBtn{background:#22c55e;color:#fff}
-    /* botão NÃO corre pela tela inteira */
-    #noBtn{
-      position:fixed;                    /* relativo à viewport */
-      background:#ef4444;color:#fff;border:0;border-radius:999px;padding:16px 28px;font-size:clamp(16px,3vw,20px);
-      box-shadow:0 10px 24px rgba(0,0,0,.12)
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 28px;
+      font-size: clamp(16px,3vw,20px);
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      margin: 0 10px;
     }
+    #yesBtn { background: #22c55e; color: #fff; }
+    #noBtn  { background: #ef4444; color: #fff; position: fixed; }
 
-    /* mensagem final ocupa 100% */
-    .final{position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-           background:rgba(255,255,255,.25); backdrop-filter:blur(4px); text-align:center; padding:16px}
-    .final > div{background:#ffffffdd;border-radius:20px;padding:24px;max-width:900px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
-    .final h2{margin:0 0 8px; font-size:clamp(28px,5vw,44px)}
+    /* mensagem final */
+    .final {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,.3);
+      backdrop-filter: blur(6px);
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .final div {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 600px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    }
+    .final h2 { font-size: clamp(24px,5vw,40px); margin: 0 0 12px; }
 
     /* confete */
-    .confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden}
+    .confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:30;}
     .piece{position:absolute; top:-12px; width:8px; height:12px; background:currentColor; opacity:.9; animation:fall 2.2s linear forwards}
     @keyframes fall{to{transform:translateY(120vh) rotate(720deg)}}
   </style>
 </head>
 <body>
-  <div class="bg">
-    <div class="center">
+  <!-- corações de fundo -->
+  <script>
+    for(let i=0;i<20;i++){
+      const heart=document.createElement('div');
+      heart.className='heart';
+      heart.style.left=Math.random()*100+'vw';
+      heart.style.animationDuration= (5+Math.random()*5)+'s';
+      heart.style.opacity=Math.random();
+      document.body.appendChild(heart);
+    }
+  </script>
+
+  <div class="center">
+    <div>
       <h1>Quer namorar comigo?</h1>
       <p>Responda com sinceridade :)</p>
-      <button id="yesBtn" class="btn" type="button">Sim</button>
-      <button id="noBtn" type="button">Não</button>
+      <button id="yesBtn" class="btn">Sim</button>
+      <button id="noBtn" class="btn">Não</button>
     </div>
-    <section id="finalMsg" class="final" aria-live="polite">
-      <div>
-        <h2>💖 Sabia que você ia dizer sim!</h2>
-        <p>Prometo cuidar de você, te apoiar nos dias difíceis e celebrar cada conquista ao seu lado. Vamos construir algo lindo juntos? 💞</p>
-      </div>
-    </section>
-    <div class="confetti" id="confetti"></div>
   </div>
 
+  <section id="finalMsg" class="final">
+    <div>
+      <h2>💖 Não vejo a hora de te ver 💖</h2>
+      <p>Prometo cuidar de você, te apoiar nos dias difíceis e celebrar cada conquista ao seu lado.</p>
+    </div>
+  </section>
+
+  <div class="confetti" id="confetti"></div>
+
   <script>
-    // refs
-    const yesBtn = document.getElementById('yesBtn');      // botão "Sim"
-    const noBtn  = document.getElementById('noBtn');       // botão "Não"
-    const finalMsg = document.getElementById('finalMsg');  // overlay final
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn  = document.getElementById('noBtn');
+    const finalMsg = document.getElementById('finalMsg');
     const confettiBox = document.getElementById('confetti');
 
-    // posiciona o "não" numa coordenada aleatória da viewport (tela inteira)
     function moveNo(){
-      const pad = 8;                            // margem das bordas
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const r  = noBtn.getBoundingClientRect(); // tamanho do botão
-      const maxL = Math.max(pad, vw - r.width  - pad);
-      const maxT = Math.max(pad, vh - r.height - pad);
-      const left = Math.floor(Math.random() * maxL);
-      const top  = Math.floor(Math.random() * maxT);
-      noBtn.style.left = left + 'px';
-      noBtn.style.top  = top  + 'px';
+      const pad=8, vw=window.innerWidth, vh=window.innerHeight;
+      const r=noBtn.getBoundingClientRect();
+      const maxL=vw-r.width-pad, maxT=vh-r.height-pad;
+      noBtn.style.left=Math.random()*maxL+'px';
+      noBtn.style.top=Math.random()*maxT+'px';
     }
-
-    // foge em mouse/teclado/toque
-    ['pointermove','pointerenter','mouseenter','mousedown'].forEach(e => noBtn.addEventListener(e, moveNo));
+    ['pointermove','mouseenter','mousedown'].forEach(e=>noBtn.addEventListener(e,moveNo));
+    noBtn.addEventListener('touchstart', e=>{e.preventDefault(); moveNo();},{passive:false});
     noBtn.addEventListener('focus', moveNo);
-    noBtn.addEventListener('touchstart', e => { e.preventDefault(); moveNo(); }, {passive:false});
 
-    // início: coloca o "não" ao lado do "sim" mas já em viewport
     window.addEventListener('load', ()=>{
-      const y = yesBtn.getBoundingClientRect();
-      noBtn.style.left = Math.min(window.innerWidth - y.width - 20, y.left + y.width + 20) + 'px';
-      noBtn.style.top  = Math.max(20, y.top) + 'px';
+      const r=yesBtn.getBoundingClientRect();
+      noBtn.style.left = (r.left + r.width + 20) + 'px';
+      noBtn.style.top  = r.top + 'px';
     });
 
-    // ao clicar no “Sim”: mostra overlay 100% e confete
     yesBtn.addEventListener('click', ()=>{
-      finalMsg.style.display = 'flex';
+      finalMsg.style.display='flex';
       dropConfetti();
     });
 
-    // confete simples
     function dropConfetti(){
-      confettiBox.innerHTML = '';
-      const colors = ['#22c55e','#ef4444','#3b82f6','#eab308','#a855f7','#f97316'];
-      const pieces = 100, width = window.innerWidth;
+      confettiBox.innerHTML='';
+      const colors=['#22c55e','#ef4444','#3b82f6','#eab308','#a855f7','#f97316'];
+      const pieces=80, width=window.innerWidth;
       for(let i=0;i<pieces;i++){
-        const el = document.createElement('div');
-        el.className = 'piece';
-        el.style.color = colors[i % colors.length];
-        el.style.left = Math.floor(Math.random() * width) + 'px';
-        el.style.animationDelay = (Math.random() * .9) + 's';
+        const el=document.createElement('div');
+        el.className='piece';
+        el.style.color=colors[i % colors.length];
+        el.style.left=Math.floor(Math.random()*width)+'px';
+        el.style.animationDelay=(Math.random()*0.9)+'s';
         confettiBox.appendChild(el);
       }
     }
-
-    // se redimensionar/rotacionar, reposiciona o "não"
-    window.addEventListener('resize', moveNo);
   </script>
 </body>
 </html>
