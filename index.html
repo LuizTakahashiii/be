@@ -41,19 +41,27 @@
       100% { transform: translateY(-10vh) rotate(45deg); opacity: 0; }
     }
 
-    /* conteúdo central sem card */
+    /* conteúdo central */
     .center {
       position: relative;
       z-index: 10;
       height: 100%;
-      display: grid;
-      place-items: center;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
     }
     h1 {
       font-size: clamp(28px,5vw,48px);
-      margin-bottom: 24px;
       color:#000;
+    }
+
+    /* grupo de botões centralizado */
+    .btn-group {
+      display: flex;
+      gap: 20px;
+      position: relative;
     }
 
     /* botões */
@@ -64,10 +72,9 @@
       font-size: clamp(16px,3vw,20px);
       cursor: pointer;
       box-shadow: 0 8px 20px rgba(0,0,0,.15);
-      margin: 0 10px;
     }
     #yesBtn { background: #22c55e; color: #fff; }
-    #noBtn  { background: #ef4444; color: #fff; position: fixed; }
+    #noBtn  { background: #ef4444; color: #fff; position: absolute; }
 
     /* mensagem final */
     .final {
@@ -130,8 +137,8 @@
   </script>
 
   <div class="center">
-    <div>
-      <h1>Quer namorar comigo?</h1>
+    <h1>Quer namorar comigo?</h1>
+    <div class="btn-group" id="btnGroup">
       <button id="yesBtn" class="btn">Sim</button>
       <button id="noBtn" class="btn">Não</button>
     </div>
@@ -149,6 +156,7 @@
   <script>
     const yesBtn = document.getElementById('yesBtn');
     const noBtn  = document.getElementById('noBtn');
+    const btnGroup = document.getElementById('btnGroup');
     const finalMsg = document.getElementById('finalMsg');
     const confettiBox = document.getElementById('confetti');
 
@@ -158,15 +166,17 @@
       const maxL=vw-r.width-pad, maxT=vh-r.height-pad;
       noBtn.style.left=Math.random()*maxL+'px';
       noBtn.style.top=Math.random()*maxT+'px';
+      noBtn.style.position='fixed'; // depois que se mexe, vira fixed na tela
     }
+
+    // eventos de fuga
     ['pointermove','mouseenter','mousedown'].forEach(e=>noBtn.addEventListener(e,moveNo));
     noBtn.addEventListener('touchstart', e=>{e.preventDefault(); moveNo();},{passive:false});
     noBtn.addEventListener('focus', moveNo);
 
+    // inicia centralizado lado a lado
     window.addEventListener('load', ()=>{
-      const r=yesBtn.getBoundingClientRect();
-      noBtn.style.left = (r.left + r.width + 20) + 'px';
-      noBtn.style.top  = r.top + 'px';
+      noBtn.style.position='relative'; // fica ao lado do "Sim" no início
     });
 
     yesBtn.addEventListener('click', ()=>{
