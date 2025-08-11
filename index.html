@@ -6,9 +6,9 @@
   <title>Quer namorar comigo?</title>
   <style>
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    body{overflow:hidden;background:#ffe4ec;position:relative}
+    body{overflow:hidden;background:linear-gradient(135deg,#ffe4ec,#e6f3ff);position:relative}
 
-    /* corações de fundo */
+    /* corações animados no fundo */
     .heart {
       position: absolute;
       width: 20px;
@@ -33,7 +33,7 @@
       100% { transform: translateY(-10vh) rotate(45deg); opacity: 0; }
     }
 
-    /* conteúdo central */
+    /* conteúdo central sem card */
     .center {
       position: relative;
       z-index: 10;
@@ -42,8 +42,8 @@
       place-items: center;
       text-align: center;
     }
-    h1 { font-size: clamp(28px,5vw,48px); margin-bottom: 16px; }
-    p  { font-size: clamp(16px,3vw,20px); margin-bottom: 20px; }
+    h1 { font-size: clamp(28px,5vw,48px); margin-bottom: 16px; color:#000 }
+    p  { font-size: clamp(16px,3vw,20px); margin-bottom: 20px; color:#222 }
 
     /* botões */
     .btn {
@@ -63,7 +63,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(255,255,255,.3);
+      background: rgba(255,255,255,.25);
       backdrop-filter: blur(6px);
       z-index: 20;
       align-items: center;
@@ -89,7 +89,7 @@
 <body>
   <!-- corações de fundo -->
   <script>
-    for(let i=0;i<20;i++){
+    for(let i=0;i<25;i++){
       const heart=document.createElement('div');
       heart.className='heart';
       heart.style.left=Math.random()*100+'vw';
