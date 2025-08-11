@@ -74,7 +74,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,.15);
     }
     #yesBtn { background: #22c55e; color: #fff; }
-    #noBtn  { background: #ef4444; color: #fff; position: absolute; }
+    #noBtn  { background: #ef4444; color: #fff; position: relative; }
 
     /* mensagem final */
     .final {
@@ -98,7 +98,7 @@
     }
     .final h2 {
       font-size: clamp(24px,5vw,40px);
-      margin: 0 0 12px;
+      margin: 0;
     }
 
     /* confete */
@@ -147,7 +147,6 @@
   <section id="finalMsg" class="final">
     <div>
       <h2>💖 Não vejo a hora de te ver 💖</h2>
-      <p>Prometo cuidar de você, te apoiar nos dias difíceis e celebrar cada conquista ao seu lado.</p>
     </div>
   </section>
 
@@ -156,7 +155,6 @@
   <script>
     const yesBtn = document.getElementById('yesBtn');
     const noBtn  = document.getElementById('noBtn');
-    const btnGroup = document.getElementById('btnGroup');
     const finalMsg = document.getElementById('finalMsg');
     const confettiBox = document.getElementById('confetti');
 
