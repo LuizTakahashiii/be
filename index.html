@@ -5,8 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Quer namorar comigo?</title>
   <style>
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    body{overflow:hidden;background:linear-gradient(135deg,#ffe4ec,#e6f3ff);position:relative}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    }
+    body{
+      overflow:hidden;
+      background:linear-gradient(135deg,#ffe4ec,#e6f3ff);
+      position:relative;
+    }
 
     /* corações animados no fundo */
     .heart {
@@ -42,7 +50,11 @@
       place-items: center;
       text-align: center;
     }
-    h1 { font-size: clamp(28px,5vw,48px); margin-bottom: 24px; color:#000 }
+    h1 {
+      font-size: clamp(28px,5vw,48px);
+      margin-bottom: 24px;
+      color:#000;
+    }
 
     /* botões */
     .btn {
@@ -77,12 +89,31 @@
       max-width: 600px;
       box-shadow: 0 8px 20px rgba(0,0,0,.15);
     }
-    .final h2 { font-size: clamp(24px,5vw,40px); margin: 0 0 12px; }
+    .final h2 {
+      font-size: clamp(24px,5vw,40px);
+      margin: 0 0 12px;
+    }
 
     /* confete */
-    .confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:30;}
-    .piece{position:absolute; top:-12px; width:8px; height:12px; background:currentColor; opacity:.9; animation:fall 2.2s linear forwards}
-    @keyframes fall{to{transform:translateY(120vh) rotate(720deg)}}
+    .confetti{
+      pointer-events:none;
+      position:fixed;
+      inset:0;
+      overflow:hidden;
+      z-index:30;
+    }
+    .piece{
+      position:absolute;
+      top:-12px;
+      width:8px;
+      height:12px;
+      background:currentColor;
+      opacity:.9;
+      animation:fall 2.2s linear forwards;
+    }
+    @keyframes fall{
+      to{transform:translateY(120vh) rotate(720deg);}
+    }
   </style>
 </head>
 <body>
