@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quer namorar comigo?</title>
+
+  <style>
+    /* reset simples */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+
+    /* container centralizado em tela cheia */
+    .page {
+      min-height: 100%;
+      display: grid;
+      place-items: center;         /* centraliza vertical e horizontal */
+      background: radial-gradient(circle at 20% 20%, #fff7, transparent 40%),
+                  radial-gradient(circle at 80% 30%, #fff5, transparent 35%),
+                  linear-gradient(135deg, #ffe4ec, #e6f3ff); /* fundo suave */
+      padding: 24px;
+    }
+
+    /* card central */
+    .card {
+      position: relative;          /* referência pro botão "não" que é absoluto */
+      width: 100%;
+      max-width: 560px;
+      background: #ffffffcc;       /* levemente translúcido */
+      backdrop-filter: blur(6px);
+      border-radius: 20px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      overflow: hidden;
+      min-height: 280px;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    p {
+      margin: 0 0 22px;
+      color: #333;
+    }
+
+    .buttons {
+      position: relative;
+      display: inline-block;
+      min-height: 60px;            /* espaço mínimo pro botão “não” fugir dentro */
+    }
+
+    /* estilo base de botão */
+    .btn {
+      appearance: none;
+      border: 0;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow: 0 6px 14px rgba(0,0,0,.1);
+      user-select: none;
+      touch-action: manipulation;  /* melhora resposta em mobile */
+    }
+    .btn:active { transform: translateY(1px) scale(.98); }
+
+    /* “sim” fixo */
+    #yesBtn {
+      background: #22c55e;         /* verde */
+      color: white;
+      margin: 0 12px 0 0;
+    }
+    #yesBtn:hover { box-shadow: 0 8px 18px rgba(34,197,94,.35); }
+
+    /* “não” vai ser absolute pra fugir */
+    #noBtn {
+      position: absolute;          /* permite mover */
+      background: #ef4444;         /* vermelho */
+      color: white;
+      left: 140px;                 /* posição inicial qualquer */
+      top: 0;
+    }
+    #noBtn:hover { box-shadow: 0 8px 18px rgba(239,68,68,.35); }
+
+    /* mensagem final oculta até clicar no “sim” */
+    .final {
+      display: none;
+      margin-top: 10px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    /* confete simples (CSS only) */
+    .confetti {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .piece {
+      position: absolute;
+      top: -12px;
+      width: 8px; height: 12px;
+      background: currentColor;
+      opacity: .9;
+      animation: fall 2.2s linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(120vh) rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card" id="card">
+      <h1>Quer namorar comigo?</h1>
+      <p>Responda com sinceridade :)</p>
+
+      <div class="buttons" id="buttonsArea" aria-live="polite">
+        <!-- botão SIM: fica fixo -->
+        <button id="yesBtn" class="btn" type="button" aria-label="Sim">Sim</button>
+
+        <!-- botão NÃO: foge (position:absolute dentro do .buttons) -->
+        <button id="noBtn" class="btn" type="button" aria-label="Não">Não</button>
+      </div>
+
+      <!-- mensagem especial exibida após clicar em “Sim” -->
+      <div id="finalMsg" class="final">
+        <h2>💖 Sabia que você ia dizer sim!</h2>
+        <p>
+          Prometo cuidar de você, te apoiar nos dias difíceis e celebrar cada conquista ao seu lado.
+          Vamos construir algo lindo juntos? 💞
+        </p>
+      </div>
+
+      <!-- contêiner do confete -->
+      <div class="confetti" id="confetti"></div>
+    </section>
+  </main>
+
+  <script>
+    // pega referências
+    const card = document.getElementById('card');                 // card central (pra confete)
+    const buttonsArea = document.getElementById('buttonsArea');   // área que limita o "não"
+    const yesBtn = document.getElementById('yesBtn');             // botão "Sim"
+    const noBtn  = document.getElementById('noBtn');              // botão "Não"
+    const finalMsg = document.getElementById('finalMsg');         // mensagem final
+    const confettiBox = document.getElementById('confetti');      // contêiner do confete
+
+    // função que move o botão "não" pra uma posição aleatória dentro do card
+    function moveNoButton(ev) {
+      // pega dimensões do contêiner visível (card) pra manter dentro da área
+      const container = card.getBoundingClientRect();             // tamanho/pos do card
+      const btnRect = noBtn.getBoundingClientRect();              // tamanho atual do botão
+
+      // limites internos com margens de segurança (10px) pra não “grudar” nas bordas
+      const padding = 10;
+      const maxLeft = container.width - btnRect.width - padding;
+      const maxTop  = container.height - btnRect.height - padding;
+
+      // posição aleatória (0..max)
+      const left = Math.max(padding, Math.floor(Math.random() * maxLeft));
+      const top  = Math.max(padding, Math.floor(Math.random() * maxTop));
+
+      // aplica (como o botão é absolute, left/top funcionam)
+      noBtn.style.left = left + 'px';
+      noBtn.style.top  = top + 'px';
+    }
+
+    // eventos que disparam a fuga:
+    // - mouseover/pointermove (desktop)
+    // - focus (teclado)
+    // - touchstart (mobile)
+    ['pointerenter','pointermove','mouseenter'].forEach(evt => {
+      noBtn.addEventListener(evt, moveNoButton);
+    });
+    noBtn.addEventListener('focus', moveNoButton);
+    noBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();      // evita “tap” registrar clique
+      moveNoButton(e);
+    }, { passive:false });
+
+    // ação do “Sim”: esconde botões, mostra mensagem e solta confete
+    yesBtn.addEventListener('click', () => {
+      buttonsArea.style.display = 'none';     // esconde os dois botões
+      finalMsg.style.display = 'block';       // mostra a mensagem final
+      dropConfetti();                         // chama confete
+    });
+
+    // confete simples com 60 pedacinhos coloridos
+    function dropConfetti() {
+      confettiBox.innerHTML = '';             // limpa confete anterior
+      const colors = ['#22c55e','#ef4444','#3b82f6','#eab308','#a855f7','#f97316'];
+      const pieces = 60;
+      const width = card.clientWidth;
+
+      for (let i = 0; i < pieces; i++) {
+        const el = document.createElement('div');
+        el.className = 'piece';
+        el.style.color = colors[i % colors.length];         // usa como background
+        el.style.left = Math.floor(Math.random() * width) + 'px';    // posição X inicial
+        el.style.animationDelay = (Math.random() * .8) + 's';        // atraso aleatório
+        el.style.transform = `translateY(${Math.random()*-40}px)`;   // variação leve
+        confettiBox.appendChild(el);
+      }
+    }
+
+    // ajuste inicial: posiciona o “não” perto do “sim”
+    window.addEventListener('load', () => {
+      // coloca o “não” um pouco à direita do “sim”
+      const yesRect = yesBtn.getBoundingClientRect();
+      const localLeft = yesRect.width + 24;   // 24px de distância
+      noBtn.style.left = localLeft + 'px';
+      noBtn.style.top = '0px';
+    });
+  </script>
+</body>
+</html>
