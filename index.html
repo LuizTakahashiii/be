@@ -2,78 +2,61 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
+  <!-- viewport-fit p/ ocupar a tela inteira em celulares com notch -->
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Quer namorar comigo?</title>
   <style>
-    /* ocupa a tela toda e remove rolagem */
-    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    body { overflow: hidden; } /* impede scroll, importante pro "não" não sumir */
+    /* ocupa 100% da tela e remove rolagem */
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    body{overflow:hidden}
 
-    /* seção de tela cheia (svh corrige em mobile com barra de endereço) */
-    .screen {
-      height: 100svh;                    /* usa a viewport visível */
-      width: 100vw;
-      display: grid;
-      place-items: center;               /* centraliza conteúdo */
-      background: radial-gradient(circle at 20% 20%, #fff7, transparent 40%),
-                  radial-gradient(circle at 80% 30%, #fff5, transparent 35%),
-                  linear-gradient(135deg, #ffe4ec, #e6f3ff);
-      position: relative;                /* base pros elementos absolutos (confete) */
+    /* seção em tela cheia (svh = viewport visível mesmo com barra do navegador) */
+    .screen{
+      height:100svh; width:100vw; position:relative;
+      display:grid; place-items:center;           /* centro real da tela */
+      background:
+        radial-gradient(circle at 20% 20%, #fff7, transparent 40%),
+        radial-gradient(circle at 80% 30%, #fff5, transparent 35%),
+        linear-gradient(135deg,#ffe4ec,#e6f3ff);
     }
 
-    /* bloco central só para texto (sem limitar “não”) */
-    .center {
-      text-align: center;
-      padding: 16px;
-      max-width: 720px;
+    /* bloco central com título e botão “sim” (sem card, sem limite estreito) */
+    .center{
+      text-align:center; padding:16px; max-width:min(90vw, 900px);
+    }
+    h1{margin:0 0 12px; font-size:clamp(32px,6vw,60px); font-weight:800}
+    p{margin:0 0 20px; font-size:clamp(16px,2.6vw,20px); color:#333}
+
+    /* botões visuais */
+    .btn{
+      border:0; border-radius:999px; padding:16px 28px; font-size:clamp(16px,2.8vw,20px);
+      cursor:pointer; box-shadow:0 10px 24px rgba(0,0,0,.12);
+      user-select:none; touch-action:manipulation; transition:transform .06s ease;
+    }
+    .btn:active{transform:translateY(1px) scale(.98)}
+    #yesBtn{background:#22c55e;color:#fff}
+
+    /* “não” é FIXED p/ correr pela tela toda; começa perto do “sim” e foge */
+    #noBtn{
+      position:fixed; left:50%; top:50%;
+      transform:translate(-50%,-50%); /* posição inicial provisória */
+      background:#ef4444; color:#fff;
+      border:0; border-radius:999px; padding:16px 28px; font-size:clamp(16px,2.8vw,20px);
+      box-shadow:0 10px 24px rgba(0,0,0,.12);
     }
 
-    h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 44px); }
-    p  { margin: 0 0 22px; font-size: clamp(14px, 2.4vw, 18px); color: #333; }
-
-    /* botões */
-    .btn {
-      appearance: none;
-      border: 0;
-      padding: 14px 22px;
-      border-radius: 999px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: transform .06s ease, box-shadow .2s ease;
-      box-shadow: 0 6px 14px rgba(0,0,0,.1);
-      user-select: none;
-      touch-action: manipulation;
+    /* mensagem final ocupa 100% da tela */
+    .final{
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+      background:rgba(255,255,255,.25); backdrop-filter:blur(4px); text-align:center; padding:16px;
     }
-    .btn:active { transform: translateY(1px) scale(.98); }
+    .final > div{background:#ffffffdd;border-radius:20px;padding:24px;max-width:900px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+    .final h2{margin:0 0 8px; font-size:clamp(28px,5vw,44px)}
 
-    #yesBtn { background: #22c55e; color: #fff; margin-right: 12px; }
-    /* O “não” fica FIXED para poder correr pela viewport inteira */
-    #noBtn  { background: #ef4444; color: #fff; position: fixed; left: 50%; top: 50%; }
-
-    /* mensagem final ocupa a tela toda */
-    .final {
-      position: absolute;
-      inset: 0;                           /* ocupa 100% da tela */
-      display: none;                      /* aparece após "Sim" */
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 16px;
-      background: rgba(255,255,255,.25);  /* leve véu */
-      backdrop-filter: blur(4px);
-    }
-    .final > div {
-      background: #ffffffdd;
-      border-radius: 20px;
-      padding: 24px;
-      max-width: 800px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.12);
-    }
-
-    /* confete simples */
-    .confetti { pointer-events: none; position: absolute; inset: 0; overflow: hidden; }
-    .piece { position: absolute; top: -12px; width: 8px; height: 12px; background: currentColor; opacity: .9; animation: fall 2.2s linear forwards; }
-    @keyframes fall { to { transform: translateY(120vh) rotate(720deg); } }
+    /* confete simples em tela cheia */
+    .confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden}
+    .piece{position:absolute; top:-12px; width:8px; height:12px; background:currentColor; opacity:.9; animation:fall 2.2s linear forwards}
+    @keyframes fall{to{transform:translateY(120vh) rotate(720deg)}}
   </style>
 </head>
 <body>
@@ -82,12 +65,13 @@
       <h1>Quer namorar comigo?</h1>
       <p>Responda com sinceridade :)</p>
 
-      <!-- “Sim” fica central; “Não” é posicionado via JS em coordenadas da viewport -->
-      <button id="yesBtn" class="btn" type="button" aria-label="Sim">Sim</button>
-      <button id="noBtn"  class="btn" type="button" aria-label="Não">Não</button>
+      <!-- botão SIM no centro -->
+      <button id="yesBtn" class="btn" type="button">Sim</button>
+      <!-- botão NÃO começa perto e foge pela tela (coordenadas definidas no JS) -->
+      <button id="noBtn" type="button">Não</button>
     </div>
 
-    <!-- mensagem final em tela cheia -->
+    <!-- overlay final (100% da tela) -->
     <section id="finalMsg" class="final" aria-live="polite">
       <div>
         <h2>💖 Sabia que você ia dizer sim!</h2>
@@ -101,58 +85,54 @@
 
   <script>
     // refs
-    const yesBtn = document.getElementById('yesBtn');   // botão "Sim"
-    const noBtn  = document.getElementById('noBtn');    // botão "Não" que foge
+    const yesBtn = document.getElementById('yesBtn');   // botão “Sim”
+    const noBtn  = document.getElementById('noBtn');    // botão “Não”
     const finalMsg = document.getElementById('finalMsg'); // overlay final
     const confettiBox = document.getElementById('confetti');
 
-    // função para posicionar o "não" dentro da viewport (tela inteira)
-    function moveNo() {
-      const pad = 8;                                   // margem pra não colar nas bordas
+    // move o “não” para posição aleatória dentro da viewport (tela inteira)
+    function moveNo(){
+      const pad = 6;                        // margem mínima das bordas
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-
-      const b = noBtn.getBoundingClientRect();         // tamanho do botão
-      const maxL = Math.max(pad, vw - b.width  - pad); // limite horizontal
-      const maxT = Math.max(pad, vh - b.height - pad); // limite vertical
-
-      // sorteia posição (0..limite) e aplica
+      const b  = noBtn.getBoundingClientRect();
+      const maxL = Math.max(pad, vw - b.width  - pad);
+      const maxT = Math.max(pad, vh - b.height - pad);
       const left = Math.floor(Math.random() * maxL);
       const top  = Math.floor(Math.random() * maxT);
       noBtn.style.left = left + 'px';
       noBtn.style.top  = top  + 'px';
+      noBtn.style.transform = '';           // remove translate inicial
+      noBtn.style.position = 'fixed';       // garante que está em viewport
     }
 
-    // eventos para fazer o "não" fugir
-    ['pointerenter','pointermove','mouseenter','mousedown'].forEach(evt => {
-      noBtn.addEventListener(evt, moveNo);
-    });
-    // mobile: ao tentar tocar, ele foge antes de clicar
-    noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); }, { passive:false });
+    // eventos que fazem o “não” fugir (mouse/teclado/toque)
+    ['pointermove','pointerenter','mouseenter','mousedown'].forEach(e=>noBtn.addEventListener(e, moveNo));
     noBtn.addEventListener('focus', moveNo);
+    noBtn.addEventListener('touchstart', e => { e.preventDefault(); moveNo(); }, {passive:false});
 
-    // posiciona o "não" inicialmente perto do "sim", mas ainda dentro da viewport
-    window.addEventListener('load', () => {
+    // posiciona “não” inicialmente perto do “sim”, mas ainda em tela cheia
+    window.addEventListener('load', ()=>{
       const r = yesBtn.getBoundingClientRect();
-      const left = Math.min(window.innerWidth  - r.width - 20, r.left + r.width + 16);
-      const top  = Math.max(16, r.top);
+      const left = Math.min(window.innerWidth - r.width - 20, r.left + r.width + 20);
+      const top  = Math.max(20, r.top);
       noBtn.style.left = left + 'px';
       noBtn.style.top  = top  + 'px';
+      noBtn.style.transform = '';
     });
 
-    // ao clicar no “Sim”: mostra mensagem em tela cheia e solta confete
-    yesBtn.addEventListener('click', () => {
-      finalMsg.style.display = 'flex';   // mostra overlay ocupando a tela
+    // clique no “Sim”: mostra overlay 100% e confete
+    yesBtn.addEventListener('click', ()=>{
+      finalMsg.style.display = 'flex';
       dropConfetti();
     });
 
-    // confete
-    function dropConfetti() {
+    // confete simples
+    function dropConfetti(){
       confettiBox.innerHTML = '';
       const colors = ['#22c55e','#ef4444','#3b82f6','#eab308','#a855f7','#f97316'];
-      const pieces = 80;                                       // mais peças pra tela cheia
-      const width = window.innerWidth;
-      for (let i = 0; i < pieces; i++) {
+      const pieces = 100, width = window.innerWidth;
+      for(let i=0;i<pieces;i++){
         const el = document.createElement('div');
         el.className = 'piece';
         el.style.color = colors[i % colors.length];
@@ -162,10 +142,8 @@
       }
     }
 
-    // readequar limites ao rotacionar/ou redimensionar a tela
-    window.addEventListener('resize', () => {
-      moveNo(); // realoca pra garantir que continua visível
-    });
+    // ao rotacionar/redimensionar, reloca o “não” para ficar visível
+    window.addEventListener('resize', moveNo);
   </script>
 </body>
 </html>
