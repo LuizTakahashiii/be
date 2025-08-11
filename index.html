@@ -1,328 +1,171 @@
-<<<<<<< HEAD
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Quer namorar comigo?</title>
-
   <style>
-    /* reset simples */
-    * { box-sizing: border-box; }
+    /* ocupa a tela toda e remove rolagem */
     html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    body { overflow: hidden; } /* impede scroll, importante pro "não" não sumir */
 
-    /* container centralizado em tela cheia */
-    .page {
-      min-height: 100%;
+    /* seção de tela cheia (svh corrige em mobile com barra de endereço) */
+    .screen {
+      height: 100svh;                    /* usa a viewport visível */
+      width: 100vw;
       display: grid;
-      place-items: center;         /* centraliza vertical e horizontal */
+      place-items: center;               /* centraliza conteúdo */
       background: radial-gradient(circle at 20% 20%, #fff7, transparent 40%),
                   radial-gradient(circle at 80% 30%, #fff5, transparent 35%),
-                  linear-gradient(135deg, #ffe4ec, #e6f3ff); /* fundo suave */
-      padding: 24px;
+                  linear-gradient(135deg, #ffe4ec, #e6f3ff);
+      position: relative;                /* base pros elementos absolutos (confete) */
     }
 
-    /* card central */
-    .card {
-      position: relative;          /* referência pro botão "não" que é absoluto */
-      width: 100%;
-      max-width: 560px;
-      background: #ffffffcc;       /* levemente translúcido */
-      backdrop-filter: blur(6px);
-      border-radius: 20px;
-      padding: 28px;
+    /* bloco central só para texto (sem limitar “não”) */
+    .center {
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.12);
-      overflow: hidden;
-      min-height: 280px;
+      padding: 16px;
+      max-width: 720px;
     }
 
-    h1 {
-      margin: 0 0 18px;
-      font-weight: 800;
-      letter-spacing: .2px;
-    }
+    h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 44px); }
+    p  { margin: 0 0 22px; font-size: clamp(14px, 2.4vw, 18px); color: #333; }
 
-    p {
-      margin: 0 0 22px;
-      color: #333;
-    }
-
-    .buttons {
-      position: relative;
-      display: inline-block;
-      min-height: 60px;            /* espaço mínimo pro botão “não” fugir dentro */
-    }
-
-    /* estilo base de botão */
+    /* botões */
     .btn {
       appearance: none;
       border: 0;
-      padding: 12px 20px;
+      padding: 14px 22px;
       border-radius: 999px;
       font-size: 16px;
       cursor: pointer;
-      transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+      transition: transform .06s ease, box-shadow .2s ease;
       box-shadow: 0 6px 14px rgba(0,0,0,.1);
       user-select: none;
-      touch-action: manipulation;  /* melhora resposta em mobile */
+      touch-action: manipulation;
     }
     .btn:active { transform: translateY(1px) scale(.98); }
 
-    /* “sim” fixo */
-    #yesBtn {
-      background: #22c55e;         /* verde */
-      color: white;
-      margin: 0 12px 0 0;
-    }
-    #yesBtn:hover { box-shadow: 0 8px 18px rgba(34,197,94,.35); }
+    #yesBtn { background: #22c55e; color: #fff; margin-right: 12px; }
+    /* O “não” fica FIXED para poder correr pela viewport inteira */
+    #noBtn  { background: #ef4444; color: #fff; position: fixed; left: 50%; top: 50%; }
 
-    /* “não” vai ser absolute pra fugir */
-    #noBtn {
-      position: absolute;          /* permite mover */
-      background: #ef4444;         /* vermelho */
-      color: white;
-      left: 140px;                 /* posição inicial qualquer */
-      top: 0;
-    }
-    #noBtn:hover { box-shadow: 0 8px 18px rgba(239,68,68,.35); }
-
-    /* mensagem final oculta até clicar no “sim” */
+    /* mensagem final ocupa a tela toda */
     .final {
-      display: none;
-      margin-top: 10px;
-      font-size: 18px;
-      line-height: 1.45;
+      position: absolute;
+      inset: 0;                           /* ocupa 100% da tela */
+      display: none;                      /* aparece após "Sim" */
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      background: rgba(255,255,255,.25);  /* leve véu */
+      backdrop-filter: blur(4px);
+    }
+    .final > div {
+      background: #ffffffdd;
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 800px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
     }
 
-    /* confete simples (CSS only) */
-    .confetti {
-      pointer-events: none;
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-    .piece {
-      position: absolute;
-      top: -12px;
-      width: 8px; height: 12px;
-      background: currentColor;
-      opacity: .9;
-      animation: fall 2.2s linear forwards;
-    }
-    @keyframes fall {
-      to { transform: translateY(120vh) rotate(720deg); }
-    }
+    /* confete simples */
+    .confetti { pointer-events: none; position: absolute; inset: 0; overflow: hidden; }
+    .piece { position: absolute; top: -12px; width: 8px; height: 12px; background: currentColor; opacity: .9; animation: fall 2.2s linear forwards; }
+    @keyframes fall { to { transform: translateY(120vh) rotate(720deg); } }
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="card" id="card">
+  <main class="screen" id="screen">
+    <div class="center">
       <h1>Quer namorar comigo?</h1>
       <p>Responda com sinceridade :)</p>
 
-      <div class="buttons" id="buttonsArea" aria-live="polite">
-        <!-- botão SIM: fica fixo -->
-        <button id="yesBtn" class="btn" type="button" aria-label="Sim">Sim</button>
+      <!-- “Sim” fica central; “Não” é posicionado via JS em coordenadas da viewport -->
+      <button id="yesBtn" class="btn" type="button" aria-label="Sim">Sim</button>
+      <button id="noBtn"  class="btn" type="button" aria-label="Não">Não</button>
+    </div>
 
-        <!-- botão NÃO: foge (position:absolute dentro do .buttons) -->
-        <button id="noBtn" class="btn" type="button" aria-label="Não">Não</button>
-      </div>
-
-      <!-- mensagem especial exibida após clicar em “Sim” -->
-      <div id="finalMsg" class="final">
+    <!-- mensagem final em tela cheia -->
+    <section id="finalMsg" class="final" aria-live="polite">
+      <div>
         <h2>💖 Sabia que você ia dizer sim!</h2>
-        <p>
-          Prometo cuidar de você, te apoiar nos dias difíceis e celebrar cada conquista ao seu lado.
-          Vamos construir algo lindo juntos? 💞
-        </p>
+        <p>Prometo cuidar de você, te apoiar nos dias difíceis e celebrar cada conquista ao seu lado. Vamos construir algo lindo juntos? 💞</p>
       </div>
-
-      <!-- contêiner do confete -->
-      <div class="confetti" id="confetti"></div>
     </section>
-  </main>
 
-  <script>
-    // pega referências
-    const card = document.getElementById('card');                 // card central (pra confete)
-    const buttonsArea = document.getElementById('buttonsArea');   // área que limita o "não"
-    const yesBtn = document.getElementById('yesBtn');             // botão "Sim"
-    const noBtn  = document.getElementById('noBtn');              // botão "Não"
-    const finalMsg = document.getElementById('finalMsg');         // mensagem final
-    const confettiBox = document.getElementById('confetti');      // contêiner do confete
-
-    // função que move o botão "não" pra uma posição aleatória dentro do card
-    function moveNoButton(ev) {
-      // pega dimensões do contêiner visível (card) pra manter dentro da área
-      const container = card.getBoundingClientRect();             // tamanho/pos do card
-      const btnRect = noBtn.getBoundingClientRect();              // tamanho atual do botão
-
-      // limites internos com margens de segurança (10px) pra não “grudar” nas bordas
-      const padding = 10;
-      const maxLeft = container.width - btnRect.width - padding;
-      const maxTop  = container.height - btnRect.height - padding;
-
-      // posição aleatória (0..max)
-      const left = Math.max(padding, Math.floor(Math.random() * maxLeft));
-      const top  = Math.max(padding, Math.floor(Math.random() * maxTop));
-
-      // aplica (como o botão é absolute, left/top funcionam)
-      noBtn.style.left = left + 'px';
-      noBtn.style.top  = top + 'px';
-    }
-
-    // eventos que disparam a fuga:
-    // - mouseover/pointermove (desktop)
-    // - focus (teclado)
-    // - touchstart (mobile)
-    ['pointerenter','pointermove','mouseenter'].forEach(evt => {
-      noBtn.addEventListener(evt, moveNoButton);
-    });
-    noBtn.addEventListener('focus', moveNoButton);
-    noBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();      // evita “tap” registrar clique
-      moveNoButton(e);
-    }, { passive:false });
-
-    // ação do “Sim”: esconde botões, mostra mensagem e solta confete
-    yesBtn.addEventListener('click', () => {
-      buttonsArea.style.display = 'none';     // esconde os dois botões
-      finalMsg.style.display = 'block';       // mostra a mensagem final
-      dropConfetti();                         // chama confete
-    });
-
-    // confete simples com 60 pedacinhos coloridos
-    function dropConfetti() {
-      confettiBox.innerHTML = '';             // limpa confete anterior
-      const colors = ['#22c55e','#ef4444','#3b82f6','#eab308','#a855f7','#f97316'];
-      const pieces = 60;
-      const width = card.clientWidth;
-
-      for (let i = 0; i < pieces; i++) {
-        const el = document.createElement('div');
-        el.className = 'piece';
-        el.style.color = colors[i % colors.length];         // usa como background
-        el.style.left = Math.floor(Math.random() * width) + 'px';    // posição X inicial
-        el.style.animationDelay = (Math.random() * .8) + 's';        // atraso aleatório
-        el.style.transform = `translateY(${Math.random()*-40}px)`;   // variação leve
-        confettiBox.appendChild(el);
-      }
-    }
-
-    // ajuste inicial: posiciona o “não” perto do “sim”
-    window.addEventListener('load', () => {
-      // coloca o “não” um pouco à direita do “sim”
-      const yesRect = yesBtn.getBoundingClientRect();
-      const localLeft = yesRect.width + 24;   // 24px de distância
-      noBtn.style.left = localLeft + 'px';
-      noBtn.style.top = '0px';
-    });
-  </script>
-</body>
-</html>
-=======
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Quer namorar comigo?</title>
-  <style>
-    /* fundo e centralização */
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    .page{min-height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe4ec,#e6f3ff)}
-    /* card */
-    .card{position:relative;max-width:560px;width:100%;background:#fff;border-radius:20px;padding:28px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.12);min-height:260px}
-    /* botões */
-    .btn{border:0;border-radius:999px;padding:12px 20px;font-size:16px;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.1)}
-    #yesBtn{background:#22c55e;color:#fff;margin-right:12px}     /* “sim” fixo */
-    #noBtn{position:absolute;left:140px;top:0;background:#ef4444;color:#fff} /* “não” foge */
-    /* mensagem final oculta */
-    .final{display:none;margin-top:12px;font-size:18px}
-    /* confete básico */
-    .confetti{pointer-events:none;position:absolute;inset:0;overflow:hidden}
-    .piece{position:absolute;top:-12px;width:8px;height:12px;background:currentColor;opacity:.9;animation:fall 2.2s linear forwards}
-    @keyframes fall{to{transform:translateY(120vh) rotate(720deg)}}
-  </style>
-</head>
-<body>
-  <main class="page">
-    <section class="card" id="card">
-      <h1>Quer namorar comigo?</h1>
-      <p>Responda com sinceridade :)</p>
-
-      <!-- área dos botões -->
-      <div id="buttonsArea" style="position:relative;display:inline-block;min-height:60px">
-        <button id="yesBtn" class="btn" type="button">Sim</button>
-        <button id="noBtn" class="btn" type="button">Não</button>
-      </div>
-
-      <!-- aparece depois do “Sim” -->
-      <div id="finalMsg" class="final">
-        <h2>💖 Sabia que você ia dizer sim!</h2>
-        <p>Prometo estar com você em todos os momentos. Vamos construir algo lindo juntos? 💞</p>
-      </div>
-
-      <!-- confete -->
-      <div class="confetti" id="confetti"></div>
-    </section>
+    <!-- confete -->
+    <div class="confetti" id="confetti"></div>
   </main>
 
   <script>
     // refs
-    const card = document.getElementById('card');
-    const yesBtn = document.getElementById('yesBtn');
-    const noBtn  = document.getElementById('noBtn');
-    const finalMsg = document.getElementById('finalMsg');
-    const buttonsArea = document.getElementById('buttonsArea');
+    const yesBtn = document.getElementById('yesBtn');   // botão "Sim"
+    const noBtn  = document.getElementById('noBtn');    // botão "Não" que foge
+    const finalMsg = document.getElementById('finalMsg'); // overlay final
     const confettiBox = document.getElementById('confetti');
 
-    // move o “não” aleatoriamente dentro do card
+    // função para posicionar o "não" dentro da viewport (tela inteira)
     function moveNo() {
-      const c = card.getBoundingClientRect();         // tamanho do card
-      const b = noBtn.getBoundingClientRect();        // tamanho do botão
-      const pad = 10;                                  // margem de segurança
-      const maxL = c.width  - b.width  - pad;
-      const maxT = c.height - b.height - pad;
-      noBtn.style.left = Math.max(pad, Math.floor(Math.random()*maxL)) + 'px';
-      noBtn.style.top  = Math.max(pad, Math.floor(Math.random()*maxT)) + 'px';
+      const pad = 8;                                   // margem pra não colar nas bordas
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const b = noBtn.getBoundingClientRect();         // tamanho do botão
+      const maxL = Math.max(pad, vw - b.width  - pad); // limite horizontal
+      const maxT = Math.max(pad, vh - b.height - pad); // limite vertical
+
+      // sorteia posição (0..limite) e aplica
+      const left = Math.floor(Math.random() * maxL);
+      const top  = Math.floor(Math.random() * maxT);
+      noBtn.style.left = left + 'px';
+      noBtn.style.top  = top  + 'px';
     }
 
-    // eventos que fazem o “não” fugir (mouse e toque)
-    ['pointerenter','pointermove','mouseenter'].forEach(e=>noBtn.addEventListener(e, moveNo));
-    noBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
+    // eventos para fazer o "não" fugir
+    ['pointerenter','pointermove','mouseenter','mousedown'].forEach(evt => {
+      noBtn.addEventListener(evt, moveNo);
+    });
+    // mobile: ao tentar tocar, ele foge antes de clicar
+    noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); }, { passive:false });
     noBtn.addEventListener('focus', moveNo);
 
-    // clique no “Sim”: esconde botões, mostra mensagem e solta confete
+    // posiciona o "não" inicialmente perto do "sim", mas ainda dentro da viewport
+    window.addEventListener('load', () => {
+      const r = yesBtn.getBoundingClientRect();
+      const left = Math.min(window.innerWidth  - r.width - 20, r.left + r.width + 16);
+      const top  = Math.max(16, r.top);
+      noBtn.style.left = left + 'px';
+      noBtn.style.top  = top  + 'px';
+    });
+
+    // ao clicar no “Sim”: mostra mensagem em tela cheia e solta confete
     yesBtn.addEventListener('click', () => {
-      buttonsArea.style.display = 'none';
-      finalMsg.style.display = 'block';
+      finalMsg.style.display = 'flex';   // mostra overlay ocupando a tela
       dropConfetti();
     });
 
-    // confete simples
-    function dropConfetti(){
+    // confete
+    function dropConfetti() {
       confettiBox.innerHTML = '';
       const colors = ['#22c55e','#ef4444','#3b82f6','#eab308','#a855f7','#f97316'];
-      const pieces = 60, width = card.clientWidth;
-      for(let i=0;i<pieces;i++){
+      const pieces = 80;                                       // mais peças pra tela cheia
+      const width = window.innerWidth;
+      for (let i = 0; i < pieces; i++) {
         const el = document.createElement('div');
         el.className = 'piece';
         el.style.color = colors[i % colors.length];
-        el.style.left = Math.floor(Math.random()*width)+'px';
-        el.style.animationDelay = (Math.random()*.8)+'s';
+        el.style.left = Math.floor(Math.random() * width) + 'px';
+        el.style.animationDelay = (Math.random() * .9) + 's';
         confettiBox.appendChild(el);
       }
     }
 
-    // posição inicial do “não”
-    window.addEventListener('load', () => {
-      const yesW = yesBtn.getBoundingClientRect().width;
-      noBtn.style.left = (yesW + 24) + 'px';
-      noBtn.style.top  = '0px';
+    // readequar limites ao rotacionar/ou redimensionar a tela
+    window.addEventListener('resize', () => {
+      moveNo(); // realoca pra garantir que continua visível
     });
   </script>
 </body>
 </html>
->>>>>>> 6a029cd (fix: add real index content)
